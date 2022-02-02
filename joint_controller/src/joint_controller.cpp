@@ -36,12 +36,12 @@ double JointController::interpolate(const double q0, const double qt, const doub
   vec << q0, qt, qd0, qdt, qdd0, qddt;
   Eigen::VectorXd coeef = mat.inverse()*vec;
 
-  double A = coeef[0];
-  double B = coeef[1];
-  double C = coeef[2];
-  double D = coeef[3];
-  double E = coeef[4];
-  double F = coeef[5];
+  const double A = coeef[0];
+  const double B = coeef[1];
+  const double C = coeef[2];
+  const double D = coeef[3];
+  const double E = coeef[4];
+  const double F = coeef[5];
   
   return A*std::pow(t, 5) + B*std::pow(t, 4) + C*std::pow(t, 3) + D*std::pow(t, 2) + E*t + F;
 }
@@ -66,20 +66,22 @@ void JointController::setJointPosition(const std::vector<double> &start_position
   
   const size_t hz = 1000; // Control each joint at 1kHz
   ros::Rate rate(hz);
-  double time_steps = 1.0 / hz; // Time step in seconds
+  const double time_steps = 1.0 / hz; // Time step in seconds
   std::vector<double> position(6, 0); // For getting the current position in the interpolation
     
   for (double t = 0.0; t < total_time; t += time_steps) {
     for (size_t index = 0; index < start_positions.size(); ++index) {
       position.at(index) = interpolate(start_positions.at(index), final_positions.at(index),
-                                  start_velocities.at(index), final_velocities.at(index),
-                                  start_accelerations.at(index), final_accelerations.at(index),
-                                  total_time, t);
+                                       start_velocities.at(index), final_velocities.at(index),
+                                       start_accelerations.at(index), final_accelerations.at(index),
+                                       total_time, t);
     }
 
     // Publish each new joint position 
     for (size_t index = 0; index < position.size(); ++index) {
-      joint_publishers_.at(index).publish(position.at(index));
+      std_msgs::Float64 joint_position;
+      joint_position.data = position.at(index);
+      joint_publishers_.at(index).publish(joint_position);
     }
 
     rate.sleep();
@@ -93,8 +95,11 @@ void JointController::setZeroPosition() {
   ros::Rate rate(5);
   for (size_t i = 0; i < 10; ++i) {  // Make sure it executes, this is just for init stuff
     for (size_t index = 0; index < joint_publishers_.size(); ++index) {
-      joint_publishers_.at(index).publish(0.0);
+      std_msgs::Float64 joint_position;
+      joint_position.data = 0.0;
+      joint_publishers_.at(index).publish(joint_position);
     }
+
     ros::spinOnce();
     rate.sleep();
   }

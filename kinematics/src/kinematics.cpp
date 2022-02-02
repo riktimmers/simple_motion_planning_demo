@@ -23,52 +23,52 @@ bool Kinematics::ikServiceCallback(kinematics::IKRequest &req, kinematics::IKRes
   double roll, pitch, yaw;
   tf2::Matrix3x3(quaternion).getEulerYPR(yaw, pitch, roll); // Get the Roll, Pitch, Yaw Euler angles from the Quaternion
 
-  Eigen::Matrix3d Rotx = getXRotationMatrix(roll); // Get the X Rotation Matrix
-  Eigen::Matrix3d Roty = getYRotationMatrix(pitch); // Get the Y Rotation Matrix
-  Eigen::Matrix3d Rotz = getZRotationMatrix(yaw); // Get the Z Rotation Matrix
-  Eigen::Matrix3d Rot = Rotz*Roty*Rotx; 
-  Eigen::Vector3d x_hat = Rot*Eigen::Vector3d::UnitX();
+  const Eigen::Matrix3d rotation_x = getXRotationMatrix(roll); // Get the X Rotation Matrix
+  const Eigen::Matrix3d rotation_y = getYRotationMatrix(pitch); // Get the Y Rotation Matrix
+  const Eigen::Matrix3d rotation_z = getZRotationMatrix(yaw); // Get the Z Rotation Matrix
+  const Eigen::Matrix3d rotation = rotation_z * rotation_y * rotation_x; 
+  const Eigen::Vector3d x_hat = rotation * Eigen::Vector3d::UnitX();
   
   Eigen::Vector3d WP;
-  Eigen::Vector3d TCP(x, y, z);
+  const Eigen::Vector3d TCP(x, y, z);
 
   WP = TCP - 0.230 * x_hat;
 
-  double WPxy = std::sqrt(std::pow(WP.x(), 2) + std::pow(WP.y(), 2));
-  double l = WPxy - 0.35; 
-  double h  = WP.z() - 0.33 - 0.42; 
-  double rho = std::sqrt(std::pow(l, 2) + std::pow(h, 2));
-  double a3z = 1.25;
-  double b4x = std::sqrt(std::pow(1.5, 2) + std::pow(0.054, 2));
+  const double WPxy = std::sqrt(std::pow(WP.x(), 2) + std::pow(WP.y(), 2));
+  const double l = WPxy - 0.35; 
+  const double h  = WP.z() - 0.33 - 0.42; 
+  const double rho = std::sqrt(std::pow(l, 2) + std::pow(h, 2));
+  const double a3z = 1.25;
+  const double b4x = std::sqrt(std::pow(1.5, 2) + std::pow(0.054, 2));
 
   if (rho > a3z + b4x || rho < std::abs(a3z - b4x)) {
     return false;
   }
 
-  double alpha = std::atan2(h, l);
-  double beta = std::acos((std::pow(rho,2) + std::pow(a3z, 2) - std::pow(b4x, 2)) / (2*rho*a3z)); 
-  double theta2 = M_PI_2 - alpha - beta; 
+  const double alpha = std::atan2(h, l);
+  const double beta = std::acos((std::pow(rho,2) + std::pow(a3z, 2) - std::pow(b4x, 2)) / (2*rho*a3z)); 
+  const double theta2 = M_PI_2 - alpha - beta; 
 
-  double gamma = std::acos((std::pow(a3z, 2) + std::pow(b4x, 2) - std::pow(rho, 2)) / (2*a3z*b4x));
-  double delta = std::atan2(b4x, 0.054); 
+  const double gamma = std::acos((std::pow(a3z, 2) + std::pow(b4x, 2) - std::pow(rho, 2)) / (2*a3z*b4x));
+  const double delta = std::atan2(b4x, 0.054); 
 
-  double theta3 = -gamma + delta; 
-  double theta1 = std::atan2(WP.y(), WP.x()); 
+  const double theta3 = -gamma + delta; 
+  const double theta1 = std::atan2(WP.y(), WP.x()); 
 
-  Eigen::Matrix3d RotTheta1 = getZRotationMatrix(theta1);
-  Eigen::Matrix3d RotTheta2 = getYRotationMatrix(theta2);
-  Eigen::Matrix3d RotTheta3 = getYRotationMatrix(theta3);
+  const Eigen::Matrix3d rotation_theta1 = getZRotationMatrix(theta1);
+  const Eigen::Matrix3d rotation_theta2 = getYRotationMatrix(theta2);
+  const Eigen::Matrix3d rotation_theta3 = getYRotationMatrix(theta3);
 
-  Eigen::Matrix3d Rarm = RotTheta1*RotTheta2*RotTheta3;
+  const Eigen::Matrix3d rotation_arm = rotation_theta1 * rotation_theta2 * rotation_theta3;
 
-  Eigen::Matrix3d Rwrist = Rarm.transpose()*Rot;
-  double r11 = Rwrist(0, 0);
-  double r21 = Rwrist(1, 0);
-  double r31 = Rwrist(2, 0);
-  double r12 = Rwrist(0, 1);
-  double r13 = Rwrist(0, 2);
-  double r32 = Rwrist(2, 1);
-  double r33 = Rwrist(2, 2);
+  const Eigen::Matrix3d rotation_wrist = rotation_arm.transpose() * rotation;
+  const double r11 = rotation_wrist(0, 0);
+  const double r21 = rotation_wrist(1, 0);
+  const double r31 = rotation_wrist(2, 0);
+  const double r12 = rotation_wrist(0, 1);
+  const double r13 = rotation_wrist(0, 2);
+  const double r32 = rotation_wrist(2, 1);
+  const double r33 = rotation_wrist(2, 2);
 
   double theta5 = std::atan2(std::sqrt(1-std::pow(r11,2)), r11); 
   double theta4 = std::atan2(r21, -r31); 

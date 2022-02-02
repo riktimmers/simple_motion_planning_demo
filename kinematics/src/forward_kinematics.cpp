@@ -19,29 +19,29 @@ void Kinematics::jointStateCallback(const sensor_msgs::JointStatePtr &joint_stat
  * \param tcp, the message for containing the TCP position
  */
 void Kinematics::calculateForwardKinematics(const std::vector<double> &joint_positions, kinematics::TCP &tcp) {
-  Eigen::Matrix3d R1 = getZRotationMatrix(joint_positions.at(0));
-  Eigen::Matrix3d R2 = getYRotationMatrix(joint_positions.at(1));
-  Eigen::Matrix3d R3 = getYRotationMatrix(joint_positions.at(2));
-  Eigen::Matrix3d R4 = getXRotationMatrix(joint_positions.at(3));
-  Eigen::Matrix3d R5 = getYRotationMatrix(joint_positions.at(4));
-  Eigen::Matrix3d R6 = getXRotationMatrix(joint_positions.at(5));
+  const Eigen::Matrix3d R1 = getZRotationMatrix(joint_positions.at(0));
+  const Eigen::Matrix3d R2 = getYRotationMatrix(joint_positions.at(1));
+  const Eigen::Matrix3d R3 = getYRotationMatrix(joint_positions.at(2));
+  const Eigen::Matrix3d R4 = getXRotationMatrix(joint_positions.at(3));
+  const Eigen::Matrix3d R5 = getYRotationMatrix(joint_positions.at(4));
+  const Eigen::Matrix3d R6 = getXRotationMatrix(joint_positions.at(5));
 
   // Hardcoded transformations (@TODO make variables out of this)
-  Eigen::Matrix4d T1 = getTransformationMatrix(R1, 0, 0, 0.33);
-  Eigen::Matrix4d T2 = getTransformationMatrix(R2, 0.35, 0, 0.42);
-  Eigen::Matrix4d T3 = getTransformationMatrix(R3, 0, 0, 1.25);
-  Eigen::Matrix4d T4 = getTransformationMatrix(R4, 0.96, 0, -0.054);
-  Eigen::Matrix4d T5 = getTransformationMatrix(R5, 0.54, 0, 0);
-  Eigen::Matrix4d T6 = getTransformationMatrix(R6, 0.230, 0, 0);
+  const Eigen::Matrix4d T1 = getTransformationMatrix(R1, 0, 0, 0.33);
+  const Eigen::Matrix4d T2 = getTransformationMatrix(R2, 0.35, 0, 0.42);
+  const Eigen::Matrix4d T3 = getTransformationMatrix(R3, 0, 0, 1.25);
+  const Eigen::Matrix4d T4 = getTransformationMatrix(R4, 0.96, 0, -0.054);
+  const Eigen::Matrix4d T5 = getTransformationMatrix(R5, 0.54, 0, 0);
+  const Eigen::Matrix4d T6 = getTransformationMatrix(R6, 0.230, 0, 0);
 
-  Eigen::Matrix3d rotation = R1*R2*R3*R4*R5*R6;
-  Eigen::Matrix4d translation = T1*T2*T3*T4*T5*T6;
+  const Eigen::Matrix3d rotation = R1*R2*R3*R4*R5*R6;
+  const Eigen::Matrix4d translation = T1*T2*T3*T4*T5*T6;
 
-  double r31 = rotation(2, 0);
-  double r33 = rotation(2, 2);
-  double r32 = rotation(2, 1);
-  double r11 = rotation(0, 0);
-  double r21 = rotation(1, 0);
+  const double r31 = rotation(2, 0);
+  const double r33 = rotation(2, 2);
+  const double r32 = rotation(2, 1);
+  const double r11 = rotation(0, 0);
+  const double r21 = rotation(1, 0);
 
   tcp.x = translation(0, 3);
   tcp.y = translation(1, 3);
