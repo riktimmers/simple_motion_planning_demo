@@ -76,7 +76,7 @@ void MotionDemo::executeTrajectory(trajectory_msgs::JointTrajectory &trajectory)
     trajectory_msgs::JointTrajectoryPoint point0 = trajectory.points.at(index);
     trajectory_msgs::JointTrajectoryPoint point1 = trajectory.points.at(index+1);
 
-    double total_time = point1.time_from_start.toSec() - point0.time_from_start.toSec();
+    const double total_time = point1.time_from_start.toSec() - point0.time_from_start.toSec();
     joint_controller_.setJointPosition(point0.positions, point0.velocities, point0.accelerations,
                                        point1.positions, point1.velocities, point1.accelerations,
                                        total_time);
