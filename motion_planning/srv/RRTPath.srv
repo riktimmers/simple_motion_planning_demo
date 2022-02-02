@@ -1,0 +1,3 @@
+geometry_msgs/Pose goal_pose
+---
+trajectory_msgs/JointTrajectory trajectory

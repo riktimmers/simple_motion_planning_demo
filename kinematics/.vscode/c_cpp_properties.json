@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/rik/ros_workspace/ros_industrial_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/joint_controller/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/kinematics/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/kuka_experimental/kuka_eki_hw_interface/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/kuka_experimental/kuka_rsi_hw_interface/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/motion_demo/include/**",
+        "/home/rik/ros_workspace/ros_industrial_ws/src/motion_planning/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

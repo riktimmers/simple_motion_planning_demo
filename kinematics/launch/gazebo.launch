@@ -1,0 +1,40 @@
+<launch>
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find kuka_kr210_support)/urdf/kr210l150.xacro'" />
+
+
+  <!--Load the joint controllers to param server-->
+  <rosparam file="$(find kuka_kr210_support)/config/kr210_controllers.yaml" command="load"/>
+
+  <!--Load controllers-->
+  <node name="spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/kuka_arm" args="joint_state_controller joint1_controller joint2_controller joint3_controller joint4_controller joint5_controller joint6_controller" />
+
+  <!--Launch a gazebo world-->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <rosparam param="/source_list">[/kuka_arm/joint_states]</rosparam>
+  </node>>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+    <remap from="/joint_states" to="/kuka_arm/joint_states" />
+  </node>
+
+  <!--spawn a robot in gazebo world-->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false"
+    output="screen" args="-urdf -param robot_description -model kr210"/>
+
+  <include file="$(find kuka_moveit_config)/launch/move_group.launch" />
+
+  <node name="kinematics" pkg="kinematics" type="kinematics_node" />
+  <node name="motion_planning" pkg="motion_planning" type="motion_planning_node" />
+  
+
+</launch>
