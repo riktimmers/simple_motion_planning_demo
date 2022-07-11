@@ -1,0 +1,24 @@
+kuka_arm:
+    #list of controllers
+    joint_state_controller:
+        type: joint_state_controller/JointStateController
+        publish_rate: 50
+
+    joint1_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a1
+    joint2_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a2
+    joint3_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a3
+    joint4_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a4
+    joint5_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a5
+    joint6_controller:
+        type: "position_controllers/JointPositionController"
+        joint: joint_a6
